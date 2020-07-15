@@ -98,7 +98,8 @@ Support.registerConnection = function(tableNames, cb) {
 
 // Remove a table
 Support.Teardown = function(tableName, cb) {
-  pg.connect(Support.Config, function(err, client, done) {
+  var pool = new pg.Pool();
+  pool.connect(Support.Config, function(err, client, done) {
     dropTable(tableName, client, function(err) {
       if(err) {
         done();
@@ -112,11 +113,14 @@ Support.Teardown = function(tableName, cb) {
 
     });
   });
+  pool.end();
 };
 
 // Return a client used for testing
 Support.Client = function(cb) {
-  pg.connect(Support.Config, cb);
+  var pool = new pg.Pool()
+  pool.connect(Support.Config, cb);
+  pool.end();
 };
 
 // Seed a record to use for testing
